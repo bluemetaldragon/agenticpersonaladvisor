@@ -93,6 +93,10 @@ class SupabaseRepository:
         res = self._t("run_trace").select("*").eq("pack_id", pack_id).order("created_at", desc=True).execute()
         return [RunTrace(**r) for r in (res.data or [])]
 
+    def list_all_runtraces(self):
+        res = self._t("run_trace").select("*").order("created_at", desc=True).limit(200).execute()
+        return [RunTrace(**r) for r in (res.data or [])]
+
     # settings (singleton)
     def get_settings(self):
         r = self._one(self._t("user_settings").select("*").eq("id", "settings_singleton").execute())

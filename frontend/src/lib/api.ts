@@ -102,6 +102,7 @@ export const api = {
 
   // activity / traces
   listTraces: (packId: string) => req<RunTrace[]>(`/packs/${packId}/traces`),
+  listAllTraces: () => req<RunTrace[]>("/traces"),
 };
 
 export { ApiError };

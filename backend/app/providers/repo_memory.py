@@ -63,6 +63,7 @@ class InMemoryRepository:
     # traces
     def save_runtrace(self, t): self._traces.append(t)
     def list_runtraces(self, pack_id): return [t for t in self._traces if t.pack_id == pack_id]
+    def list_all_runtraces(self): return list(reversed(self._traces))
 
     # settings
     def get_settings(self): return self._settings

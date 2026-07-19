@@ -89,7 +89,10 @@ def list_packs() -> list[dict]:
     return [{"pack_id": p.id, "title": p.title, "uploaded_at": p.uploaded_at.isoformat(),
              "retention_mode": p.retention_mode.value} for p in _repo.list_packs()]
 
-
+@app.get("/traces")
+def list_all_traces() -> list[dict]:
+    return [t.model_dump(mode="json") for t in _repo.list_all_runtraces()]
+    
 @app.get("/packs/{pack_id}")
 def get_pack(pack_id: str) -> dict:
     pack = _repo.get_pack(pack_id)
