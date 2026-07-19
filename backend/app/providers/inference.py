@@ -65,10 +65,15 @@ class DeepSeekInference:
 
     def complete(self, system: str, user: str) -> str:
         client = self._ensure_client()
+        # DeepSeek V4 expects a ThinkingOptions object, not a bare boolean.
+        thinking_config = {"type": "enabled"} if self._thinking else {"type": "disabled"}
         resp = client.chat.completions.create(
             model=self._model,
-            messages=[{"role": "system", "content": system},
-                      {"role": "user", "content": user}],
-            extra_body={"thinking": self._thinking},
+            messages=[
+                {"role": "system", "content": system},
+                {"role": "user", "content": user},
+            ],
+            extra_body={"thinking": thinking_config},
         )
         return (resp.choices[0].message.content or "").strip()
+

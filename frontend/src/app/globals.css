@@ -1,0 +1,82 @@
+@import "tailwindcss";
+/*@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");*/
+
+/* ============================================================================
+   Design tokens — Board Preparation Dashboard
+   Palette derived from the Visily export (css_tokens.txt). Institutional:
+   navy primary, cool-grey field, hairline borders, near-zero radius, Inter.
+
+   --accent is the SINGLE runtime lever (FR-SET-3). The Branding screen rewrites
+   just this variable (and its foreground) to repaint the whole app; every
+   component reads var(--accent), never a literal hex.
+   ============================================================================ */
+:root {
+  /* brand — runtime-swappable */
+  --accent: #003366;            /* primary navy */
+  --accent-foreground: #f6f7f9; /* text/icon on accent */
+
+  /* surfaces */
+  --background: #f6f7f9;        /* app field */
+  --foreground: #1d1f23;        /* primary ink */
+  --card: #ffffff;             /* raised surfaces */
+  --card-foreground: #1d1f23;
+
+  /* muted / subtle */
+  --muted: #eaecee;            /* chip / pill fill */
+  --muted-foreground: #7a7e84; /* secondary text */
+
+  /* lines & fields */
+  --border: #dfe1e4;
+  --input: #dfe1e4;
+  --ring: var(--accent);
+
+  /* status */
+  --success: #1a7f4b;
+  --success-foreground: #eefef4;
+  --danger: #b3261e;
+  --danger-foreground: #fff5f5;
+
+  /* shape & motion */
+  --radius: 0.25rem;           /* 4px, from the button tokens */
+  --radius-pill: 9999px;       /* chips/badges */
+}
+
+/* Expose tokens to Tailwind v4 utilities (bg-accent, text-muted-foreground, …) */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+
+  --radius-sm: var(--radius);
+  --radius-pill: var(--radius-pill);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* Quality floor: visible keyboard focus, reduced-motion respected (skill §floor) */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

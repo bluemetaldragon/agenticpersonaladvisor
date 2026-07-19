@@ -42,13 +42,20 @@ class JobRunner:
         except Exception as e:  # FR-JOB-5: clear error + safe state, nothing shown ready
             self._fail(job_id, str(e))
 
+
     def _run_sync(self, job_id, raw, title, lens_id, retention) -> None:
         job = self._repo.get_job(job_id)
+        persist = retention == RetentionMode.PERSIST
 
         self._enter(job, 0)                                   # parsing
         pack = self._providers.parser.parse(raw, title)
         pack.retention_mode = retention
-        job.pack_id = pack.id
+        # Persist the pack NOW so the job's pack_id FK is satisfiable. For
+        # ephemeral packs the pack is never stored, so we must not set pack_id
+        # (it would violate job_pack_id_fkey against board_pack).
+        if persist:
+            self._repo.save_pack(pack)
+            job.pack_id = pack.id
         self._done(job, 0)
 
         self._enter(job, 1)                                   # indexing
@@ -58,17 +65,16 @@ class JobRunner:
         self._enter(job, 2)                                   # pre-read
         profile = DirectorProfile(lens_id=lens_id)
         pre_read = self._engine.generate_preread(pack, profile)
+        if persist:
+            self._repo.save_profile(profile)
+            self._repo.save_preread(pre_read)
         self._done(job, 2)
 
         self._enter(job, 3)                                   # challenge
-        if retention == RetentionMode.PERSIST:
-            self._repo.save_pack(pack)
-            self._repo.save_profile(profile)
-            self._repo.save_preread(pre_read)
         challenge = self._engine.generate_challenge(pack, profile, pre_read)
         self._done(job, 3)
 
-        if retention != RetentionMode.PERSIST:
+        if not persist:
             self._providers.retriever.drop(pack.id)           # ephemeral: no residue
 
         job.status = JobStatus.READY
